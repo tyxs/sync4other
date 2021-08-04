@@ -1,0 +1,28 @@
+name: RevokeMsgPatcher
+on:
+  schedule:
+    - cron: '10 */3 * * *'
+  workflow_dispatch:
+  watch:
+    types: started
+  repository_dispatch:
+    types: sync-huiyadanli-RevokeMsgPatcher
+jobs:
+  repo-sync:
+    env:
+      PAT: ${{ secrets.PAT }} 
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: sync huiyadanli-RevokeMsgPatcher
+        uses: repo-sync/github-sync@v2
+        if: env.PAT
+        with:
+          source_repo: "https://github.com/huiyadanli/RevokeMsgPatcher.git"
+          source_branch: "master"
+          destination_branch: "RevokeMsgPatcher"
+          github_token: ${{ secrets.PAT }}
