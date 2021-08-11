@@ -1,0 +1,28 @@
+name: shimmeris-SCFProxy
+on:
+  schedule:
+    - cron: '10 0-23/3 * * *'
+  workflow_dispatch:
+  watch:
+    types: started
+  repository_dispatch:
+    types: sync-shimmeris-SCFProxy
+jobs:
+  repo-sync:
+    env:
+      PAT: ${{ secrets.PAT }} 
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: sync shimmeris-SCFProxy
+        uses: repo-sync/github-sync@v2
+        if: env.PAT
+        with:
+          source_repo: "https://github.com/shimmeris/SCFProxy.git"
+          source_branch: "main"
+          destination_branch: "shimmeris-SCFProxy"
+          github_token: ${{ secrets.PAT }}
